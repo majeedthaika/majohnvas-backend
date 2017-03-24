@@ -8,7 +8,7 @@ class ApplicationController < ActionController::Base
 
   def check_jwt_for_current_user
     user_jwt = cookies[:user_jwt]
-    user_type = JwtAuth.decode_jwt(user_type_jwt)["type"].to_s rescue nil
+    user_type = JwtAuth.decode_jwt(user_jwt)["type"].to_s rescue nil
     if user_type.blank?
       render json: { success: false }, status: :unauthorized and return
     end

@@ -8,7 +8,7 @@ class StudentsController < ApplicationController
 
   def api_sign_in
     student = Student.find_by_email(params[:student][:email])
-    if student.valid_password?(params[:student][:password]).to_s
+    if student.valid_password?(params[:student][:password])
       cookies[:user_jwt] = { value: student.generate_jwt_student, http_only: true }
       render json: { success: true }
     else
