@@ -24,6 +24,7 @@ class Student < ApplicationRecord
   # :confirmable, :lockable, :timeoutable and :omniauthable
   has_many :posts, as: :author
   has_many :comments, as: :author
+  has_many :enrolls
   has_many :courses, :through => :enrolls
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable

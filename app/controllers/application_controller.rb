@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception, unless: :json_request?
   before_action :check_jwt_for_current_user
+  respond_to :json
 
   def json_request?
     request.format.json?

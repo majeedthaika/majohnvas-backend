@@ -9,3 +9,5 @@
 Teacher.create!(first_name: 'Sakko', last_name: 'Sama', email: 'sakko@b.c', password: '123456', password_confirmation: '123456')
 Student.create!(first_name: 'Majeed', last_name: 'Thaika', email: 'mj@b.c', password: '123456', password_confirmation: '123456')
 Student.create!(first_name: 'John', last_name: 'Virojvatanakul', email: 'john@b.c', password: '123456', password_confirmation: '123456')
+
+Course.create!(course_code: 'ABCDE', teacher_id: 1)

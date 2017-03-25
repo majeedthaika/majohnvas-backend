@@ -4,27 +4,47 @@ class CoursesController < ApplicationController
   # GET /courses
   # GET /courses.json
   def index
-    @courses = Course.all
+    if @current_user_type == "teacher"
+      @courses = Course.where(:teacher => @current_user_id)
+    else
+      @courses = Student.find(@current_user_id).courses.uniq
+    end
   end
 
   # GET /courses/1
   # GET /courses/1.json
   def show
+    if @current_user_type == "teacher"
+      if @course.teacher != @current_user_id
+        render json: { success: false }, status: :unauthorized
+      end
+    else
+      if Enroll.find_by(:student_id => @current_user_id, :course => @course).blank?
+        render json: { success: false }, status: :unauthorized
+      end
+    end
   end
 
   # GET /courses/new
-  def new
-    @course = Course.new
-  end
+  # def new
+  # end
 
   # GET /courses/1/edit
-  def edit
-  end
+  # def edit
+  #   if @current_user_type != "teacher"
+  #     render json: { success: false }, status: :unauthorized
+  #   end
+  # end
 
   # POST /courses
   # POST /courses.json
   def create
-    @course = Course.new(course_params)
+    if @current_user_type != "teacher"
+      render json: { success: false }, status: :unauthorized
+    end
+
+    raise course_params
+    @course = Course.new(course_params, teacher_id = @current_user_id)
 
     respond_to do |format|
       if @course.save
@@ -69,6 +89,6 @@ class CoursesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def course_params
-      params.require(:course).permit(:name, :teacher_id)
+      params.require(:name)
     end
 end

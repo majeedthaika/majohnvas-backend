@@ -3,8 +3,8 @@
 # Table name: enrolls
 #
 #  id          :integer          not null, primary key
-#  student_id  :integer
-#  course_code :string
+#  student_id  :integer          not null
+#  course_code :string           not null
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
