@@ -39,47 +39,55 @@ class CoursesController < ApplicationController
   # POST /courses
   # POST /courses.json
   def create
-    if @current_user_type != "teacher"
-      render json: { success: false }, status: :unauthorized
-    end
-
-    raise course_params
-    @course = Course.new(course_params, teacher_id = @current_user_id)
-
-    respond_to do |format|
-      if @course.save
-        format.html { redirect_to @course, notice: 'Course was successfully created.' }
-        format.json { render :show, status: :created, location: @course }
-      else
-        format.html { render :new }
-        format.json { render json: @course.errors, status: :unprocessable_entity }
+    if @current_user_type == "teacher"
+      code = ""
+      loop do
+        code = (0...5).map { ('A'..'Z').to_a[rand(26)] }.join
+        duplicate = Course.find(course_code = code) rescue nil
+        break if duplicate.blank?
       end
+
+      @course = Course.new
+      @course.name = course_params
+      @course.course_code = code
+      @course.teacher = @current_user_id
+
+      respond_to do |format|
+        if @course.save
+          format.html { redirect_to @course, notice: 'Course was successfully created.' }
+          format.json { render :show, status: :created, location: @course }
+        else
+          format.json { render json: @course.errors, status: :unprocessable_entity }
+        end
+      end
+    else
+      render json: { success: false }, status: :unauthorized
     end
   end
 
   # PATCH/PUT /courses/1
   # PATCH/PUT /courses/1.json
-  def update
-    respond_to do |format|
-      if @course.update(course_params)
-        format.html { redirect_to @course, notice: 'Course was successfully updated.' }
-        format.json { render :show, status: :ok, location: @course }
-      else
-        format.html { render :edit }
-        format.json { render json: @course.errors, status: :unprocessable_entity }
-      end
-    end
-  end
+  # def update
+  #   respond_to do |format|
+  #     if @course.update(course_params)
+  #       format.html { redirect_to @course, notice: 'Course was successfully updated.' }
+  #       format.json { render :show, status: :ok, location: @course }
+  #     else
+  #       format.html { render :edit }
+  #       format.json { render json: @course.errors, status: :unprocessable_entity }
+  #     end
+  #   end
+  # end
 
   # DELETE /courses/1
   # DELETE /courses/1.json
-  def destroy
-    @course.destroy
-    respond_to do |format|
-      format.html { redirect_to courses_url, notice: 'Course was successfully destroyed.' }
-      format.json { head :no_content }
-    end
-  end
+  # def destroy
+  #   @course.destroy
+  #   respond_to do |format|
+  #     format.html { redirect_to courses_url, notice: 'Course was successfully destroyed.' }
+  #     format.json { head :no_content }
+  #   end
+  # end
 
   private
     # Use callbacks to share common setup or constraints between actions.
