@@ -1,13 +1,17 @@
 class TeachersController < ApplicationController
-  skip_before_action :check_jwt_for_current_user, only: [:api_sign_in, :api_sign_out]
+  skip_before_action :check_jwt_for_current_user, only: [:api_sign_in]
   respond_to :json
 
   def check_signed_in
-    render json: { success: true }
+    if @current_user_type == "teacher"
+      render json: { success: true }
+    else
+      render json: { success: false }, status: :unauthorized and return
+    end
   end
 
   def api_sign_in
-    teacher = Student.find_by_email(params[:teacher][:email])
+    teacher = Teacher.find_by_email(params[:teacher][:email])
     if teacher.valid_password?(params[:teacher][:password])
       cookies[:user_jwt] = { value: teacher.generate_jwt_teacher, http_only: true }
       render json: { success: true }
@@ -17,9 +21,13 @@ class TeachersController < ApplicationController
   end
 
   def api_sign_out
-    reset_session
-    cookies.delete(:user_jwt)
-    render json: { success: true, status: :unauthorized }
+    if @current_user_type == "teacher"
+      reset_session
+      cookies.delete(:user_jwt)
+      render json: { success: true, status: :unauthorized }
+    else
+      render json: { success: false }
+    end
   end
 
   # GET /teachers
