@@ -11,6 +11,9 @@ class PostsController < ApplicationController
   # GET /posts/1
   # GET /posts/1.json
   def show
+    if @course != @post.course
+      render json: { success: false }, status: :unauthorized
+    end
   end
 
   # GET /posts/new

@@ -11,6 +11,11 @@ class CommentsController < ApplicationController
   # GET /comments/1
   # GET /comments/1.json
   def show
+    if @course != @post.course
+      render json: { success: false }, status: :unauthorized
+    elsif @post != @comment.post
+      render json: { success: false }, status: :unauthorized
+    end
   end
 
   # GET /comments/new
@@ -25,22 +30,26 @@ class CommentsController < ApplicationController
   # POST /comments
   # POST /comments.json
   def create
-    @comment = nil
-    if @current_user_type == "Teacher"
-      teacher = Teacher.find(@current_user_id)
-      @comment = teacher.comments.build(:content => comment_params, :post => @post)
-    else
-      student = Student.find(@current_user_id)
-      @comment = student.comments.build(:content => comment_params, :post => @post)
-    end
-    respond_to do |format|
-      if @comment.save
-        format.html { redirect_to @comment, notice: 'Comment was successfully created.' }
-        format.json { render :show, status: :created }
+    if @course == @post.course
+      @comment = nil
+      if @current_user_type == "Teacher"
+        teacher = Teacher.find(@current_user_id)
+        @comment = teacher.comments.build(:content => comment_params, :post => @post)
       else
-        format.html { render :new }
-        format.json { render json: @comment.errors, status: :unprocessable_entity }
+        student = Student.find(@current_user_id)
+        @comment = student.comments.build(:content => comment_params, :post => @post)
       end
+      respond_to do |format|
+        if @comment.save
+          format.html { redirect_to @comment, notice: 'Comment was successfully created.' }
+          format.json { render :show, status: :created }
+        else
+          format.html { render :new }
+          format.json { render json: @comment.errors, status: :unprocessable_entity }
+        end
+      end
+    else
+      render json: { success: false }, status: :unauthorized
     end
   end
 
