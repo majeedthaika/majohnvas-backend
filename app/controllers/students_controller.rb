@@ -51,19 +51,19 @@ class StudentsController < ApplicationController
 
   # POST /students
   # POST /students.json
-  def create
-    @student = Student.new(student_params)
-
-    respond_to do |format|
-      if @student.save
-        format.html { redirect_to @student, notice: 'Student was successfully created.' }
-        format.json { render :show, status: :created, location: @student }
-      else
-        format.html { render :new }
-        format.json { render json: @student.errors, status: :unprocessable_entity }
-      end
-    end
-  end
+  # def create
+  #   @student = Student.new(student_params)
+  #
+  #   respond_to do |format|
+  #     if @student.save
+  #       format.html { redirect_to @student, notice: 'Student was successfully created.' }
+  #       format.json { render :show, status: :created }
+  #     else
+  #       format.html { render :new }
+  #       format.json { render json: @student.errors, status: :unprocessable_entity }
+  #     end
+  #   end
+  # end
 
   # PATCH/PUT /students/1
   # PATCH/PUT /students/1.json
@@ -97,6 +97,6 @@ class StudentsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def student_params
-      params.require(:student).permit(:first_name, :last_name)
+      params.require([:email, :password])
     end
 end
