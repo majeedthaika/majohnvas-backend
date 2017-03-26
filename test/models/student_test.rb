@@ -3,8 +3,8 @@
 # Table name: students
 #
 #  id                     :integer          not null, primary key
-#  first_name             :text
-#  last_name              :text
+#  first_name             :text             not null
+#  last_name              :text             not null
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  email                  :string           default(""), not null
