@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
       render json: { success: false }, status: :unauthorized and return
     end
     @current_user_type = user_type
-    if @current_user_type == "teacher"
+    if @current_user_type == "Teacher"
       self.check_jwt_for_current_teacher
     else
       self.check_jwt_for_current_student

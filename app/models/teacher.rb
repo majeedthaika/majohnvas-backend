@@ -20,15 +20,23 @@
 #
 
 class Teacher < ApplicationRecord
+  before_create :generate_id
+  self.primary_key = :id
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
-  has_many :posts, as: :author
+  has_many :posts, as: :author, dependent: :destroy
   has_many :comments, as: :author
   has_many :courses
 
   def generate_jwt_teacher(exp=30.minutes.from_now.to_i)
-    JwtAuth.generate_jwt({exp: exp, type: "teacher", teacher_id: self.id})
+    JwtAuth.generate_jwt({exp: exp, type: "Teacher", teacher_id: self.id})
+  end
+
+  def generate_id
+    begin
+      self.id = SecureRandom.random_number(1_000_000_000)
+    end while (Teacher.where(id: self.id).exists? || Student.where(id: self.id).exists?)
   end
 end

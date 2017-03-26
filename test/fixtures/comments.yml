@@ -2,12 +2,13 @@
 #
 # Table name: comments
 #
-#  id         :integer          not null, primary key
-#  content    :text
-#  post_id    :integer
-#  author     :integer
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id          :integer          not null, primary key
+#  content     :text
+#  post_id     :integer
+#  author_id   :integer
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  author_type :text
 #
 
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html

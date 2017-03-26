@@ -6,6 +6,8 @@ Rails.application.routes.draw do
       resources :comments
     end
   end
+  post "courses/join"
+
   get "students/check_signed_in"
   post "students/api_sign_in"
   delete "students/api_sign_out"

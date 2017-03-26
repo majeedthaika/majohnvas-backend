@@ -4,7 +4,7 @@ class CoursesController < ApplicationController
   # GET /courses
   # GET /courses.json
   def index
-    if @current_user_type == "teacher"
+    if @current_user_type == "Teacher"
       @courses = Course.where(:teacher => @current_user_id)
     else
       @courses = Student.find(@current_user_id).courses.uniq
@@ -14,7 +14,7 @@ class CoursesController < ApplicationController
   # GET /courses/1
   # GET /courses/1.json
   def show
-    if @current_user_type == "teacher"
+    if @current_user_type == "Teacher"
       if @course.teacher != @current_user_id
         render json: { success: false }, status: :unauthorized
       end
@@ -31,7 +31,7 @@ class CoursesController < ApplicationController
 
   # GET /courses/1/edit
   # def edit
-  #   if @current_user_type != "teacher"
+  #   if @current_user_type != "Teacher"
   #     render json: { success: false }, status: :unauthorized
   #   end
   # end
@@ -39,17 +39,10 @@ class CoursesController < ApplicationController
   # POST /courses
   # POST /courses.json
   def create
-    if @current_user_type == "teacher"
-      code = ""
-      loop do
-        code = (0...5).map { ('A'..'Z').to_a[rand(26)] }.join
-        duplicate = Course.find(course_code = code) rescue nil
-        break if duplicate.blank?
-      end
+    if @current_user_type == "Teacher"
 
       @course = Course.new
       @course.name = course_params
-      @course.course_code = code
       @course.teacher = @current_user_id
 
       respond_to do |format|
@@ -58,6 +51,30 @@ class CoursesController < ApplicationController
           format.json { render :show, status: :created, location: @course }
         else
           format.json { render json: @course.errors, status: :unprocessable_entity }
+        end
+      end
+    else
+      render json: { success: false }, status: :unauthorized
+    end
+  end
+
+  # POST /courses/join.json
+  def join
+    if @current_user_type == "Student"
+      @course = Course.find(join_course_params) rescue nil
+      if @course.blank?
+        render json: { success: false }, status: :unauthorized
+      else
+        @enroll = Enroll.new
+        @enroll.course = @course
+        @enroll.student = @current_user_id
+
+        respond_to do |format|
+          if @enroll.save
+            format.json { render json: @course }
+          else
+            format.json { render json: @enroll.errors, status: :unprocessable_entity }
+          end
         end
       end
     else
@@ -92,7 +109,12 @@ class CoursesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_course
-      @course = Course.find(params[:id])
+      @course = Course.find(params[:course_code])
+    end
+
+    # Never trust parameters from the scary internet, only allow the white list through.
+    def join_course_params
+      params.require(:course_code)
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

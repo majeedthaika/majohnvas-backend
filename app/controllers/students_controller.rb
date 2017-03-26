@@ -2,7 +2,7 @@ class StudentsController < ApplicationController
   skip_before_action :check_jwt_for_current_user, only: [:api_sign_in]
 
   def check_signed_in
-    if @current_user_type == "student"
+    if @current_user_type == "Student"
       render json: { success: true }
     else
       render json: { success: false }, status: :unauthorized and return
@@ -20,7 +20,7 @@ class StudentsController < ApplicationController
   end
 
   def api_sign_out
-    if @current_user_type == "student"
+    if @current_user_type == "Student"
       reset_session
       cookies.delete(:user_jwt)
       render json: { success: true, status: :unauthorized }
